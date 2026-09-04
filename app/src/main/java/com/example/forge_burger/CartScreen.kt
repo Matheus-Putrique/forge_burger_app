@@ -1,27 +1,16 @@
-package com.example.forge_burger
+package com.exemplo.meuapp
 
-import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -30,430 +19,256 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-// ----------------------------------------------------------------------
-// TELA DE DETALHE DO LANCHE (foto + descricao + botao de adicionar)
-// As cores (Fundo, FundoCard, Laranja...) estao no MenuScreen.kt
-// ----------------------------------------------------------------------
-
-@Preview(showBackground = true, heightDp = 780)
+@Preview(showBackground = true, heightDp = 800)
 @Composable
-fun CartScreen(
-    nome: String = "The Classic Smash",
-    preco: String = "$14.90"
-) {
+fun CartScreen() {
+    val corFundo = Color(18, 18, 18)
+    val corCard = Color(28, 28, 28)
+    val corLaranja = Color(255, 160, 0)
+    val corTextoCinza = Color(160, 160, 160)
 
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = Fundo
-    ) {
+    var qtdLanche by remember { mutableIntStateOf(1) }
+    var qtdBatata by remember { mutableIntStateOf(1) }
+    var qtdCerveja by remember { mutableIntStateOf(1) }
 
-        Column(
-            modifier = Modifier.fillMaxSize()
-        ) {
+    val precoLanche: Float = 19.40f
+    val precoBatata: Float = 4.90f
+    val precoCerveja: Float = 14.00f
+    val taxaEntrega: Float = 4.99f
 
-            FotoDoLanche()
+    val subtotal: Float = (qtdLanche * precoLanche) + (qtdBatata * precoBatata) + (qtdCerveja * precoCerveja)
+    val totalGeral: Float = subtotal + taxaEntrega
 
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .verticalScroll(rememberScrollState())
-                    .padding(horizontal = 16.dp)
-            ) {
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                NomeEPreco(
-                    nome = nome,
-                    preco = preco
-                )
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                Descricao(
-                    "Two signature smashed beef patties, double melted " +
-                        "cheddar cheese, house craft secret sauce, home-pickled " +
-                        "cucumbers on a perfectly toasted brioche bun."
-                )
-
-                Spacer(modifier = Modifier.height(20.dp))
-
-                Ingredientes()
-
-                Spacer(modifier = Modifier.height(20.dp))
-
-                NutritionFacts()
-
-            }
-
-            BarraDeCompra(preco = preco)
-
-        }
-
-    }
-
-}
-
-// ----------------------------------------------------------------------
-// FOTO DO LANCHE COM OS BOTOES DE VOLTAR E FAVORITAR POR CIMA
-// ----------------------------------------------------------------------
-
-@Preview
-@Composable
-fun FotoDoLanche(Voltar: () -> Unit = {}) {
-
-    var favorito by remember { mutableStateOf(false) }
-
-    Box(
+    Column(
         modifier = Modifier
-            .fillMaxWidth()
-            .height(260.dp)
+            .fillMaxSize()
+            .background(corFundo)
     ) {
-
-        // lugar da foto (trocar por Image quando tiver as imagens)
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-            color = Color(70, 50, 35)
-        ) {
-
-            Box(
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "🍔",
-                    fontSize = 90.sp
-                )
-            }
-
-        }
-
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-
-            BotaoRedondo(icone = "←", cor = TextoClaro, onClick = Voltar)
-
-            BotaoRedondo(
-                icone = if (favorito) "♥" else "♡",
-                cor = Laranja,
-                onClick = { favorito = !favorito }
-            )
-
-        }
-
-    }
-
-}
-
-@Composable
-fun BotaoRedondo(icone: String, cor: Color, onClick: () -> Unit = {}) {
-
-    Surface(
-        onClick = onClick,
-        modifier = Modifier.size(40.dp),
-        shape = RoundedCornerShape(50),
-        color = Color(0, 0, 0, 160)
-    ) {
-
-        Box(
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = icone,
-                color = cor,
-                fontSize = 18.sp
-            )
-        }
-
-    }
-
-}
-
-// ----------------------------------------------------------------------
-// NOME + PRECO
-// ----------------------------------------------------------------------
-
-@Composable
-fun NomeEPreco(nome: String, preco: String) {
-
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-
-        Text(
-            text = nome,
-            color = TextoClaro,
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold
-        )
-
-        Text(
-            text = preco,
-            color = Laranja,
-            fontSize = 22.sp,
-            fontWeight = FontWeight.Bold
-        )
-
-    }
-
-}
-
-@Composable
-fun Descricao(texto: String) {
-
-    Text(
-        text = texto,
-        color = TextoCinza,
-        fontSize = 15.sp
-    )
-
-}
-
-// ----------------------------------------------------------------------
-// INGREDIENTES (abre e fecha ao clicar)
-// ----------------------------------------------------------------------
-
-@Preview
-@Composable
-fun Ingredientes() {
-
-    var aberto by remember { mutableStateOf(false) }
-
-    val lista = listOf(
-        "2x smashed beef patty (90g)",
-        "2x cheddar cheese",
-        "House craft secret sauce",
-        "Home-pickled cucumbers",
-        "Brioche bun"
-    )
-
-    Surface(
-        onClick = { aberto = !aberto },
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp),
-        color = FundoCard
-    ) {
-
-        Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-
-                    Text(text = "📋")
-
-                    Spacer(modifier = Modifier.width(10.dp))
-
-                    Text(
-                        text = "Ingredients",
-                        color = TextoClaro,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-
-                }
-
-                Text(
-                    text = if (aberto) "▲" else "▼",
-                    color = TextoCinza
-                )
-
-            }
-
-            if (aberto) {
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                for (item in lista) {
-
-                    Text(
-                        text = "•  $item",
-                        color = TextoCinza,
-                        fontSize = 14.sp,
-                        modifier = Modifier.padding(vertical = 3.dp)
-                    )
-
-                }
-
-            }
-
-        }
-
-    }
-
-}
-
-// ----------------------------------------------------------------------
-// TABELA NUTRICIONAL
-// ----------------------------------------------------------------------
-
-@Preview
-@Composable
-fun NutritionFacts() {
-
-    Column() {
-
-        Text(
-            text = "Nutrition Facts",
-            color = TextoClaro,
-            fontSize = 15.sp,
-            fontWeight = FontWeight.Bold
-        )
-
-        Spacer(modifier = Modifier.height(10.dp))
-
-        Row(
-            modifier = Modifier.horizontalScroll(rememberScrollState())
-        ) {
-
-            ChipInfo("Cal: 650")
-            Spacer(modifier = Modifier.width(8.dp))
-            ChipInfo("Prot: 32g")
-            Spacer(modifier = Modifier.width(8.dp))
-            ChipInfo("Carb: 40g")
-            Spacer(modifier = Modifier.width(8.dp))
-            ChipInfo("Fat: 38g")
-
-        }
-
-    }
-
-}
-
-@Composable
-fun ChipInfo(texto: String) {
-
-    Surface(
-        shape = RoundedCornerShape(8.dp),
-        color = FundoCard
-    ) {
-
-        Text(
-            text = texto,
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
-            color = TextoCinza,
-            fontSize = 13.sp
-        )
-
-    }
-
-}
-
-// ----------------------------------------------------------------------
-// BARRA DE BAIXO: quantidade + adicionar ao carrinho
-// ----------------------------------------------------------------------
-
-@Preview
-@Composable
-fun BarraDeCompra(preco: String = "$14.90", Adicionar: () -> Unit = {}) {
-
-    var quantidade by remember { mutableStateOf(1) }
-
-    Surface(
-        modifier = Modifier.fillMaxWidth(),
-        color = Fundo
-    ) {
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-
-            SeletorQuantidade(
-                quantidade = quantidade,
-                Menos = { if (quantidade > 1) quantidade-- },
-                Mais = { quantidade++ }
-            )
-
-            Spacer(modifier = Modifier.width(12.dp))
-
             Surface(
-                onClick = Adicionar,
-                modifier = Modifier
-                    .weight(1f)
-                    .height(52.dp),
                 shape = RoundedCornerShape(50),
-                color = Laranja
+                color = corCard,
+                modifier = Modifier.size(36.dp)
             ) {
-
-                Box(
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "Add to Cart – $preco",
-                        color = Color.Black,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold
-                    )
+                Box(contentAlignment = Alignment.Center) {
+                    Text(text = "←", color = Color.White, fontSize = 16.sp)
                 }
-
             }
 
-        }
-
-    }
-
-}
-
-@Composable
-fun SeletorQuantidade(quantidade: Int, Menos: () -> Unit = {}, Mais: () -> Unit = {}) {
-
-    Surface(
-        shape = RoundedCornerShape(50),
-        color = FundoCard
-    ) {
-
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-
-            BotaoQuantidade("−", Menos)
-
             Text(
-                text = "$quantidade",
-                color = TextoClaro,
-                fontSize = 16.sp,
+                text = "BURGERCRAFT",
+                color = corLaranja,
+                fontSize = 20.sp,
                 fontWeight = FontWeight.Bold
             )
 
-            BotaoQuantidade("+", Mais)
-
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(text = "🔔", fontSize = 18.sp, modifier = Modifier.padding(end = 10.dp))
+                Surface(
+                    modifier = Modifier.size(34.dp),
+                    shape = RoundedCornerShape(50),
+                    color = Color(80, 60, 50)
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        Text(text = "👤", fontSize = 16.sp)
+                    }
+                }
+            }
         }
 
-    }
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 16.dp)
+        ) {
+            Text(
+                text = "Meu Carrinho",
+                color = Color.White,
+                fontSize = 22.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(vertical = 12.dp)
+            )
 
+            CardItemDoPedido(
+                foto = "🍔",
+                nome = "Smash Clássico",
+                descricao = "Médio, Bacon Extra, Cheddar Extra",
+                preco = precoLanche,
+                quantidade = qtdLanche,
+                aoDiminuir = { if (qtdLanche > 1) qtdLanche-- },
+                aoAumentar = { qtdLanche++ }
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            CardItemDoPedido(
+                foto = "🍟",
+                nome = "Batata Frita Rústica",
+                descricao = "Grande, Sal de Alecrim",
+                preco = precoBatata,
+                quantidade = qtdBatata,
+                aoDiminuir = { if (qtdBatata > 1) qtdBatata-- },
+                aoAumentar = { qtdBatata++ }
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            CardItemDoPedido(
+                foto = "🍺",
+                nome = "Cerveja Artesanal IPA",
+                descricao = "Lata Gelada 350ml",
+                preco = precoCerveja,
+                quantidade = qtdCerveja,
+                aoDiminuir = { if (qtdCerveja > 1) qtdCerveja-- },
+                aoAumentar = { qtdCerveja++ }
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            HorizontalDivider(color = Color(40, 40, 40))
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(text = "Subtotal", color = corTextoCinza, fontSize = 14.sp)
+                Text(text = "R$ " + "%.2f".format(subtotal), color = Color.White, fontSize = 14.sp)
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(text = "Taxa de Entrega", color = corTextoCinza, fontSize = 14.sp)
+                Text(text = "R$ " + "%.2f".format(taxaEntrega), color = Color.White, fontSize = 14.sp)
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(text = "Total", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                Text(
+                    text = "R$ " + "%.2f".format(totalGeral),
+                    color = corLaranja,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+        }
+
+        Surface(
+            shape = RoundedCornerShape(25.dp),
+            color = corLaranja,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+                .height(50.dp)
+        ) {
+            Box(contentAlignment = Alignment.Center) {
+                Text(
+                    text = "Finalizar Pedido",
+                    color = Color.Black,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp
+                )
+            }
+        }
+    }
 }
 
 @Composable
-fun BotaoQuantidade(icone: String, onClick: () -> Unit = {}) {
-
+fun CardItemDoPedido(
+    foto: String,
+    nome: String,
+    descricao: String,
+    preco: Float,
+    quantidade: Int,
+    aoDiminuir: () -> Unit,
+    aoAumentar: () -> Unit
+) {
     Surface(
-        onClick = onClick,
-        color = Color.Transparent
+        shape = RoundedCornerShape(14.dp),
+        color = Color(28, 28, 28),
+        modifier = Modifier.fillMaxWidth()
     ) {
+        Row(
+            modifier = Modifier.padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Surface(
+                shape = RoundedCornerShape(10.dp),
+                color = Color(45, 45, 45),
+                modifier = Modifier.size(54.dp)
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Text(text = foto, fontSize = 28.sp)
+                }
+            }
 
-        Text(
-            text = icone,
-            modifier = Modifier.padding(horizontal = 14.dp, vertical = 12.dp),
-            color = TextoClaro,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Bold
-        )
+            Spacer(modifier = Modifier.width(12.dp))
 
+            Column(modifier = Modifier.weight(1f)) {
+                Text(text = nome, color = Color.White, fontSize = 15.sp, fontWeight = FontWeight.Bold)
+                Text(text = descricao, color = Color(160, 160, 160), fontSize = 12.sp)
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = "R$ " + "%.2f".format(preco),
+                    color = Color(255, 160, 0),
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+
+            Surface(
+                shape = RoundedCornerShape(20.dp),
+                color = Color(42, 42, 42)
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp)
+                ) {
+                    Button(
+                        onClick = aoDiminuir,
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+                        contentPadding = PaddingValues(0.dp),
+                        modifier = Modifier.size(26.dp)
+                    ) {
+                        Text("-", color = Color.White)
+                    }
+
+                    Text(
+                        text = "$quantidade",
+                        color = Color.White,
+                        modifier = Modifier.padding(horizontal = 6.dp),
+                        fontSize = 13.sp
+                    )
+
+                    Button(
+                        onClick = aoAumentar,
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+                        contentPadding = PaddingValues(0.dp),
+                        modifier = Modifier.size(26.dp)
+                    ) {
+                        Text("+", color = Color.White)
+                    }
+                }
+            }
+        }
     }
-
 }
